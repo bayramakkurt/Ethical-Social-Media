@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Giriş Yap">
+  <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="card" style="max-width: 450px; width: 100%; padding: 40px;">
+      <div style="text-align: center; margin-bottom: 40px;">
+        <div style="font-size: 56px; margin-bottom: 10px;">🔥</div>
+        <h1 style="font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 8px;">Hoş Geldin</h1>
+        <p style="color: #8a8a8a; font-size: 16px;">Hesabına giriş yap</p>
+      </div>
+      
+      <form id="loginForm">
+        <div style="margin-bottom: 20px;">
+          <input 
+            type="text" 
+            name="username" 
+            class="input" 
+            placeholder="Kullanıcı adı"
+            required 
+          />
+        </div>
+        
+        <div style="margin-bottom: 30px;">
+          <input 
+            type="password" 
+            name="password" 
+            class="input" 
+            placeholder="Şifre"
+            required 
+          />
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 20px;">
+          <span id="loginText">Giriş Yap</span>
+          <span id="loginLoader" class="loading" style="display: none;"></span>
+        </button>
+        
+        <div id="error" class="error" style="display: none;"></div>
+      </form>
+      
+      <div style="text-align: center; margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        <div style="color: #8a8a8a; margin-bottom: 15px;">Hesabın yok mu?</div>
+        <a href="/signup" class="btn btn-secondary" style="width: 100%; margin-bottom: 15px; text-decoration: none;">
+          Kayıt Ol
+        </a>
+        <a href="/login-card" style="color: #FE3C72; font-weight: 600; font-size: 14px; display: block;">
+          📇 Kartla Giriş Yap
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    import { authAPI } from '../lib/api';
+    
+    const form = document.getElementById('loginForm') as HTMLFormElement;
+    const errorDiv = document.getElementById('error') as HTMLDivElement;
+    const loginText = document.getElementById('loginText') as HTMLSpanElement;
+    const loginLoader = document.getElementById('loginLoader') as HTMLSpanElement;
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const username = formData.get('username') as string;
+      const password = formData.get('password') as string;
+      
+      try {
+        loginText.style.display = 'none';
+        loginLoader.style.display = 'inline-block';
+        errorDiv.style.display = 'none';
+        
+        const response = await authAPI.login(username, password);
+        
+        // Profil bilgilerini al
+        await authAPI.getProfile();
+        
+        // Feed'e yönlendir
+        window.location.href = '/feed';
+      } catch (error: any) {
+        errorDiv.textContent = error.message || 'Giriş başarısız. Kullanıcı adı veya şifre hatalı.';
+        errorDiv.style.display = 'block';
+        loginText.style.display = 'inline';
+        loginLoader.style.display = 'none';
+      }
+    });
+  </script>
+</BaseLayout>

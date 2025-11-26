@@ -1,0 +1,155 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Kartla Giriş">
+  <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="card" style="max-width: 500px; width: 100%; padding: 40px;">
+      <div style="text-align: center; margin-bottom: 35px;">
+        <div style="font-size: 64px; margin-bottom: 15px;">🆔</div>
+        <h1 style="font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 8px;">Kartla Giriş</h1>
+        <p style="color: #8a8a8a; font-size: 16px;">Kimlik kartınla hızlıca giriş yap</p>
+      </div>
+      
+      <div id="uploadArea" style="border: 2px dashed rgba(254, 60, 114, 0.3); border-radius: 16px; padding: 50px 30px; text-align: center; cursor: pointer; background: rgba(254, 60, 114, 0.05); transition: all 0.2s ease;">
+        <div id="uploadIcon" style="font-size: 56px; margin-bottom: 15px;">📸</div>
+        <p style="font-weight: 600; color: #fff; margin-bottom: 8px; font-size: 16px;">Kimlik Kartını Yükle</p>
+        <p style="color: #8a8a8a; font-size: 14px;">veya sürükle bırak</p>
+        <input type="file" id="cardInput" accept="image/*" style="display: none;" />
+      </div>
+      
+      <div id="preview" style="display: none; margin-top: 25px;">
+        <img id="previewImage" style="width: 100%; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);" />
+        <button id="loginButton" class="btn btn-primary" style="width: 100%;">
+          <span id="loginText">Giriş Yap</span>
+          <span id="loginLoader" class="loading" style="display: none;"></span>
+        </button>
+        <button id="cancelButton" class="btn btn-secondary" style="width: 100%; margin-top: 15px;">
+          İptal
+        </button>
+      </div>
+      
+      <div id="error" class="error" style="display: none; margin-top: 20px;"></div>
+      <div id="success" class="success" style="display: none; margin-top: 20px;"></div>
+      
+      <div style="text-align: center; margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        <a href="/login" style="color: #FE3C72; font-weight: 600; text-decoration: none;">← Şifre ile giriş yap</a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    import { authAPI } from '../lib/api';
+    
+    const uploadArea = document.getElementById('uploadArea') as HTMLDivElement;
+    const cardInput = document.getElementById('cardInput') as HTMLInputElement;
+    const preview = document.getElementById('preview') as HTMLDivElement;
+    const previewImage = document.getElementById('previewImage') as HTMLImageElement;
+    const loginButton = document.getElementById('loginButton') as HTMLButtonElement;
+    const cancelButton = document.getElementById('cancelButton') as HTMLButtonElement;
+    const errorDiv = document.getElementById('error') as HTMLDivElement;
+    const successDiv = document.getElementById('success') as HTMLDivElement;
+    const loginText = document.getElementById('loginText') as HTMLSpanElement;
+    const loginLoader = document.getElementById('loginLoader') as HTMLSpanElement;
+    
+    let selectedFile: File | null = null;
+    
+    uploadArea.addEventListener('click', () => cardInput.click());
+    
+    uploadArea.addEventListener('mouseenter', () => {
+      uploadArea.style.borderColor = '#FE3C72';
+      uploadArea.style.background = 'rgba(254, 60, 114, 0.1)';
+    });
+    
+    uploadArea.addEventListener('mouseleave', () => {
+      uploadArea.style.borderColor = 'rgba(254, 60, 114, 0.3)';
+      uploadArea.style.background = 'rgba(254, 60, 114, 0.05)';
+    });
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#667eea';
+      uploadArea.style.backgroundColor = '#f3f4f6';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.borderColor = '#d1d5db';
+      uploadArea.style.backgroundColor = 'transparent';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#d1d5db';
+      uploadArea.style.backgroundColor = 'transparent';
+      
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        handleFileSelect(files[0]);
+      }
+    });
+    
+    cardInput.addEventListener('change', (e) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files.length > 0) {
+        handleFileSelect(target.files[0]);
+      }
+    });
+    
+    function handleFileSelect(file: File) {
+      if (!file.type.startsWith('image/')) {
+        errorDiv.textContent = 'Lütfen bir görsel dosyası seçin.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      
+      selectedFile = file;
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        previewImage.src = e.target?.result as string;
+        uploadArea.style.display = 'none';
+        preview.style.display = 'block';
+        errorDiv.style.display = 'none';
+      };
+      
+      reader.readAsDataURL(file);
+    }
+    
+    cancelButton.addEventListener('click', () => {
+      selectedFile = null;
+      uploadArea.style.display = 'block';
+      preview.style.display = 'none';
+      cardInput.value = '';
+    });
+    
+    loginButton.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      
+      try {
+        loginText.style.display = 'none';
+        loginLoader.style.display = 'inline-block';
+        errorDiv.style.display = 'none';
+        loginButton.disabled = true;
+        
+        const response = await authAPI.loginWithCard(selectedFile);
+        
+        successDiv.textContent = '✓ Giriş başarılı! Yönlendiriliyorsunuz...';
+        successDiv.style.display = 'block';
+        
+        // Profil bilgilerini al
+        await authAPI.getProfile();
+        
+        setTimeout(() => {
+          window.location.href = '/feed';
+        }, 1000);
+        
+      } catch (error: any) {
+        errorDiv.textContent = error.message || 'Kart eşleştirmesi başarısız. Lütfen tekrar deneyin.';
+        errorDiv.style.display = 'block';
+        loginText.style.display = 'inline';
+        loginLoader.style.display = 'none';
+        loginButton.disabled = false;
+      }
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,259 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Kayıt Ol">
+  <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="card" style="max-width: 550px; width: 100%; padding: 40px;">
+      <div style="text-align: center; margin-bottom: 35px;">
+        <div style="font-size: 56px; margin-bottom: 10px;">✨</div>
+        <h1 style="font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 8px;">Hesap Oluştur</h1>
+        <p style="color: #8a8a8a; font-size: 16px;">Güvenli kayıt için bilgilerini gir</p>
+      </div>
+      
+      <!-- Adım 1: Kart Okuma -->
+      <div id="step1" style="display: block;">
+        <div style="margin-bottom: 25px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #FE3C72 0%, #FF6036 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 14px;">1</div>
+            <h2 style="font-size: 18px; font-weight: 600; color: #fff; margin: 0;">Kimlik Kartını Yükle</h2>
+          </div>
+        </div>
+        
+        <div id="uploadArea" style="border: 2px dashed rgba(254, 60, 114, 0.3); border-radius: 16px; padding: 50px 30px; text-align: center; cursor: pointer; background: rgba(254, 60, 114, 0.05); transition: all 0.2s ease;">
+          <div style="font-size: 64px; margin-bottom: 15px;">🆔</div>
+          <p style="font-weight: 600; color: #fff; margin-bottom: 8px; font-size: 16px;">Kimlik Kartını Seç</p>
+          <p style="color: #8a8a8a; font-size: 14px;">Bilgilerin otomatik okunacak</p>
+          <input type="file" id="cardInput" accept="image/*" style="display: none;" />
+        </div>
+        
+        <div id="cardPreview" style="display: none; margin-top: 20px;">
+          <img id="cardImage" style="width: 100%; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);" />
+        </div>
+        
+        <button id="readCardButton" class="btn btn-primary" style="width: 100%; margin-top: 20px; display: none;">
+          <span id="readText">Kartı Oku ve Devam Et</span>
+          <span id="readLoader" class="loading" style="display: none;"></span>
+        </button>
+      </div>
+      
+      <!-- Adım 2: Bilgileri Düzenle ve Kaydet -->
+      <div id="step2" style="display: none;">
+        <div style="margin-bottom: 25px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #FE3C72 0%, #FF6036 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 14px;">2</div>
+            <h2 style="font-size: 18px; font-weight: 600; color: #fff; margin: 0;">Bilgilerini Kontrol Et</h2>
+          </div>
+        </div>
+        
+        <form id="signupForm">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+              <input type="text" name="name" class="input" placeholder="Ad Soyad *" required />
+            </div>
+            <div>
+              <input type="text" name="username" class="input" placeholder="Kullanıcı Adı *" required />
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <input type="email" name="email" class="input" placeholder="E-posta *" required />
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <input type="password" name="password" class="input" placeholder="Şifre (min. 6 karakter) *" required minlength="6" />
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+              <input type="date" name="birthDate" class="input" placeholder="Doğum Tarihi *" required />
+            </div>
+            <div>
+              <select name="gender" class="input" required style="color: #fff;">
+                <option value="" style="background: #2a2a2a; color: #8a8a8a;">Cinsiyet *</option>
+                <option value="male" style="background: #2a2a2a; color: #fff;">Erkek</option>
+                <option value="female" style="background: #2a2a2a; color: #fff;">Kadın</option>
+                <option value="other" style="background: #2a2a2a; color: #fff;">Diğer</option>
+              </select>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 30px;">
+            <input type="text" name="location" class="input" placeholder="📍 Konum (opsiyonel)" />
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <span id="signupText">Hesap Oluştur</span>
+            <span id="signupLoader" class="loading" style="display: none;"></span>
+          </button>
+        </form>
+        
+        <button id="backButton" class="btn btn-secondary" style="width: 100%; margin-top: 15px;">
+          ← Geri Dön
+        </button>
+      </div>
+      
+      <div id="error" class="error" style="display: none; margin-top: 20px;"></div>
+      <div id="success" class="success" style="display: none; margin-top: 20px;"></div>
+      
+      <div style="text-align: center; margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #8a8a8a;">
+        Zaten hesabın var mı? <a href="/login" style="color: #FE3C72; font-weight: 600; text-decoration: none;">Giriş Yap</a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    import { authAPI } from '../lib/api';
+    
+    const step1 = document.getElementById('step1') as HTMLDivElement;
+    const step2 = document.getElementById('step2') as HTMLDivElement;
+    const uploadArea = document.getElementById('uploadArea') as HTMLDivElement;
+    const cardInput = document.getElementById('cardInput') as HTMLInputElement;
+    const cardPreview = document.getElementById('cardPreview') as HTMLDivElement;
+    const cardImage = document.getElementById('cardImage') as HTMLImageElement;
+    const readCardButton = document.getElementById('readCardButton') as HTMLButtonElement;
+    const signupForm = document.getElementById('signupForm') as HTMLFormElement;
+    const backButton = document.getElementById('backButton') as HTMLButtonElement;
+    const errorDiv = document.getElementById('error') as HTMLDivElement;
+    const successDiv = document.getElementById('success') as HTMLDivElement;
+    const readText = document.getElementById('readText') as HTMLSpanElement;
+    const readLoader = document.getElementById('readLoader') as HTMLSpanElement;
+    const signupText = document.getElementById('signupText') as HTMLSpanElement;
+    const signupLoader = document.getElementById('signupLoader') as HTMLSpanElement;
+    
+    let selectedFile: File | null = null;
+    let cardData: any = null;
+    let cardImageBase64: string = '';
+    
+    uploadArea.addEventListener('click', () => cardInput.click());
+    
+    uploadArea.addEventListener('mouseenter', () => {
+      uploadArea.style.borderColor = '#FE3C72';
+      uploadArea.style.background = 'rgba(254, 60, 114, 0.1)';
+    });
+    
+    uploadArea.addEventListener('mouseleave', () => {
+      uploadArea.style.borderColor = 'rgba(254, 60, 114, 0.3)';
+      uploadArea.style.background = 'rgba(254, 60, 114, 0.05)';
+    });
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#FE3C72';
+      uploadArea.style.background = 'rgba(254, 60, 114, 0.15)';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.borderColor = 'rgba(254, 60, 114, 0.3)';
+      uploadArea.style.background = 'rgba(254, 60, 114, 0.05)';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#d1d5db';
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        handleFileSelect(files[0]);
+      }
+    });
+    
+    cardInput.addEventListener('change', (e) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files.length > 0) {
+        handleFileSelect(target.files[0]);
+      }
+    });
+    
+    function handleFileSelect(file: File) {
+      selectedFile = file;
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        cardImage.src = e.target?.result as string;
+        cardPreview.style.display = 'block';
+        readCardButton.style.display = 'block';
+        errorDiv.style.display = 'none';
+      };
+      
+      reader.readAsDataURL(file);
+    }
+    
+    readCardButton.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      
+      try {
+        readText.style.display = 'none';
+        readLoader.style.display = 'inline-block';
+        errorDiv.style.display = 'none';
+        readCardButton.disabled = true;
+        
+        const response = await authAPI.readCard(selectedFile);
+        
+        cardData = response.card_data;
+        cardImageBase64 = cardData.card_image;
+        
+        // Form alanlarını doldur
+        (signupForm.elements.namedItem('name') as HTMLInputElement).value = cardData.name || '';
+        (signupForm.elements.namedItem('email') as HTMLInputElement).value = cardData.email || '';
+        (signupForm.elements.namedItem('birthDate') as HTMLInputElement).value = cardData.birthDate || '';
+        (signupForm.elements.namedItem('gender') as HTMLSelectElement).value = cardData.gender || '';
+        (signupForm.elements.namedItem('location') as HTMLInputElement).value = cardData.location || '';
+        
+        // Adım 2'ye geç
+        step1.style.display = 'none';
+        step2.style.display = 'block';
+        
+      } catch (error: any) {
+        errorDiv.textContent = error.message || 'Kart okuma başarısız.';
+        errorDiv.style.display = 'block';
+        readText.style.display = 'inline';
+        readLoader.style.display = 'none';
+        readCardButton.disabled = false;
+      }
+    });
+    
+    backButton.addEventListener('click', () => {
+      step2.style.display = 'none';
+      step1.style.display = 'block';
+    });
+    
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(signupForm);
+      const userData = {
+        username: formData.get('username') as string,
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+        name: formData.get('name') as string,
+        birthDate: formData.get('birthDate') as string,
+        gender: formData.get('gender') as string,
+        location: formData.get('location') as string || undefined,
+        profile_pic: cardData?.profile_pic || undefined,
+        biography: undefined,
+        card_image: cardImageBase64
+      };
+      
+      try {
+        signupText.style.display = 'none';
+        signupLoader.style.display = 'inline-block';
+        errorDiv.style.display = 'none';
+        
+        await authAPI.signup(userData);
+        
+        successDiv.textContent = '✓ Kayıt başarılı! Yönlendiriliyorsunuz...';
+        successDiv.style.display = 'block';
+        
+        setTimeout(() => {
+          window.location.href = '/feed';
+        }, 1500);
+        
+      } catch (error: any) {
+        errorDiv.textContent = error.message || 'Kayıt başarısız.';
+        errorDiv.style.display = 'block';
+        signupText.style.display = 'inline';
+        signupLoader.style.display = 'none';
+      }
+    });
+  </script>
+</BaseLayout>

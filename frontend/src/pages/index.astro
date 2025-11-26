@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Ana Sayfa">
+  <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="card" style="max-width: 600px; width: 100%; padding: 50px 40px; text-align: center;">
+      <div style="font-size: 80px; margin-bottom: 20px;">🔥</div>
+      <h1 style="font-size: 48px; font-weight: 800; color: #fff; margin-bottom: 16px; line-height: 1.2;">
+        AI Korumalı<br />Sosyal Platform
+      </h1>
+      <p style="font-size: 18px; color: #8a8a8a; margin-bottom: 40px; line-height: 1.6;">
+        Yapay zeka ile korunan, güvenli ve modern sosyal medya deneyimi
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 15px; max-width: 300px; margin: 0 auto 50px;">
+        <a href="/login" class="btn btn-primary" style="text-decoration: none;">
+          Giriş Yap
+        </a>
+        <a href="/signup" class="btn btn-secondary" style="text-decoration: none;">
+          Yeni Hesap Oluştur
+        </a>
+        <a href="/login-card" style="color: #FE3C72; font-weight: 600; font-size: 14px; margin-top: 10px; text-decoration: none;">
+          📇 Kartla Giriş Yap
+        </a>
+      </div>
+      
+      <div style="text-align: left; padding: 30px; background: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #fff;">✨ Güvenlik Özellikleri</h2>
+        <div style="display: grid; gap: 15px; font-size: 15px; color: #b0b0b0;">
+          <div style="display: flex; gap: 12px; align-items: start;">
+            <span style="font-size: 24px;">🆔</span>
+            <div>
+              <strong style="color: #fff; display: block; margin-bottom: 4px;">Kimlik Doğrulama</strong>
+              Güvenli kayıt için TC kimlik kartı doğrulaması
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: start;">
+            <span style="font-size: 24px;">🛡️</span>
+            <div>
+              <strong style="color: #fff; display: block; margin-bottom: 4px;">İçerik Moderasyonu</strong>
+              Otomatik NSFW, şiddet ve kan içeriği tespiti
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: start;">
+            <span style="font-size: 24px;">📝</span>
+            <div>
+              <strong style="color: #fff; display: block; margin-bottom: 4px;">Küfür Filtresi</strong>
+              Görsel ve metin içinde argo kelime kontrolü
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: start;">
+            <span style="font-size: 24px;">👥</span>
+            <div>
+              <strong style="color: #fff; display: block; margin-bottom: 4px;">Sosyal Etkileşim</strong>
+              Takip sistemi ve güvenli mesajlaşma
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

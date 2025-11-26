@@ -1,0 +1,8 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FeedComponent from '../components/Feed';
+---
+
+<BaseLayout title="Ana Sayfa">
+  <FeedComponent client:only="react" />
+</BaseLayout>

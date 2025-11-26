@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProfileComponent from '../../components/Profile';
+
+const { username } = Astro.params;
+---
+
+<BaseLayout title={`@${username}`}>
+  <ProfileComponent username={username!} client:only="react" />
+</BaseLayout>
